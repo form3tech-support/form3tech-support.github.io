@@ -1,0 +1,17 @@
+
+export AWS_CA_BUNDLE=/Users/Shared/form3-certs/form3-palo-alto.pem
+export NODE_EXTRA_CA_CERTS=/Users/Shared/form3-certs/form3-palo-alto.pem
+export SSL_CERT_FILE=/Users/Shared/form3-certs/form3-palo-alto.pem
+export REQUESTS_CA_BUNDLE=/Users/Shared/form3-certs/form3-palo-alto.pem
+export AWS_CA_BUNDLE=/Users/Shared/form3-certs/form3-palo-alto.pem
+export NODE_EXTRA_CA_CERTS=/Users/Shared/form3-certs/form3-palo-alto.pem
+export SSL_CERT_FILE=/Users/Shared/form3-certs/form3-palo-alto.pem
+export REQUESTS_CA_BUNDLE=/Users/Shared/form3-certs/form3-palo-alto.pem
+
+# Setting PATH for Python 3.11
+# The original version is saved in .zprofile.pysave
+export PATH="/opt/form3/bin:${PATH}"
+export PATH="/opt/homebrew/bin:${PATH}"
+export PATH="/usr/local/jamf/bin:${PATH}"
+
+/Users/craigcain/.form3c.command
